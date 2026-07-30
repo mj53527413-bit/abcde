@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/coord-to-grid",
+      "dest": "/weather.js?type=coord-to-grid"
+    },
+    {
+      "src": "/api/weather",
+      "dest": "/weather.js?type=current-weather"
+    },
+    {
+      "src": "/api/weekly-weather",
+      "dest": "/weather.js?type=weekly-weather"
+    },
+    {
+      "src": "/api/school-schedule",
+      "dest": "/weather.js?type=school-schedule"
+    },
+    {
+      "src": "/api/school-search",
+      "dest": "/weather.js?type=school-search"
+    },
+    {
+      "src": "/api/class-count",
+      "dest": "/weather.js?type=class-count"
+    },
+    {
+      "src": "/api/schedule",
+      "dest": "/weather.js?type=schedule"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}

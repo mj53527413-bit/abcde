@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트에코 쾌적교실 - AI 환기 & 냉난방 스케줄러</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- 브랜드 헤더 -->
+        <header class="app-header">
+            <div class="header-branding">
+                <div class="logo-icon">🏫</div>
+                <div>
+                    <h1 class="main-title">스마트에코 쾌적교실</h1>
+                    <p class="sub-title">AI 기반 실시간 교실 환기 & 냉난방 최적화 스케줄러</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="mode-badge" id="dataModeBadge">
+                    <span class="pulse-dot"></span> <span id="dataModeText">기상청 공식 API 연동 중</span>
+                </div>
+                <button class="preset-btn" id="presetHotDayBtn">☀️ 무더운 날</button>
+                <button class="preset-btn" id="presetPerfectDayBtn">🌿 쾌적한 날</button>
+                <button class="preset-btn" id="presetDustyDayBtn">😷 미세먼지 날</button>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             [STEP 1] 요구사항 반영: 처음에 들어오면 먼저 학교/학년/반 선택 게이트 패널
+             ========================================== -->
+        <section class="school-select-gate" id="schoolGatePanel">
+            <div class="gate-card">
+                <div class="gate-header">
+                    <div class="gate-icon">🏫</div>
+                    <h2>환영합니다! 우리 학교와 학급을 먼저 선택하세요</h2>
+                    <p>학교, 학년, 반을 선택하면 100% 기상청 실시간 날씨와 나이스 시간표가 연동됩니다.</p>
+                </div>
+
+                <div class="gate-form-grid">
+                    <!-- 학교 검색 -->
+                    <div class="gate-form-group">
+                        <label for="inputGateSchoolSearch">🏫 학교 이름 검색</label>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="inputGateSchoolSearch" placeholder="학교명 검색 (예: 제주여자고등학교)" value="제주여자고등학교" class="school-input gate-input">
+                            <button class="search-btn" id="btnGateSearchSchool">검색</button>
+                            <div class="school-dropdown-list" id="gateSchoolDropdownList"></div>
+                        </div>
+                    </div>
+
+                    <!-- 학년 / 반 선택 -->
+                    <div class="gate-form-group flex-group">
+                        <div>
+                            <label for="selectGateGrade">🎓 학년 선택</label>
+                            <select id="selectGateGrade" class="custom-select gate-select"></select>
+                        </div>
+                        <div>
+                            <label for="selectGateClass">👥 반 선택</label>
+                            <select id="selectGateClass" class="custom-select gate-select"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="start-dashboard-btn" id="btnStartDashboard">
+                    ✨ AI 쾌적교실 대시보드 및 환기 가이드 시작하기 🚀
+                </button>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             [STEP 2] 학교 선택 완료 후 출력되는 메인 대시보드 영역
+             ========================================== -->
+        <div id="mainDashboardWrapper" style="display: none;">
+
+            <!-- 상단 탭 라우팅 바 (오늘 날씨 & 환기 보기 / 일주일 기상청 날씨 예보 보기) -->
+            <nav class="url-tab-nav">
+                <div class="nav-tabs">
+                    <button class="tab-btn active" data-tab="today">☀️ 오늘의 쾌적교실 & AI 환기 가이드</button>
+                    <button class="tab-btn" data-tab="weekly">📅 일주일 기상청 날씨 예보</button>
+                    <button class="tab-btn" data-tab="calendar">📅 나이스 교시별 시간표</button>
+                </div>
+
+                <div class="nav-right-tools">
+                    <span class="selected-school-badge" id="selectedSchoolBadge">제주여자고등학교 2학년 9반</span>
+                    <button class="change-school-btn" id="btnChangeSchool">🔄 학교/학년/반 변경</button>
+                    <button class="share-url-btn" id="btnShareUrl">🔗 URL 공유 링크 복사</button>
+                </div>
+            </nav>
+
+            <!-- 위치 및 날짜 컨트롤 바 -->
+            <section class="location-school-bar">
+                <div class="bar-group">
+                    <span class="bar-label">📍 날씨 & 날짜 설정</span>
+                    <button class="gps-btn" id="btnGpsLocation" title="현재 내 GPS 위치로 날씨 조회">
+                        🎯 내 위치 (GPS 연동)
+                    </button>
+                    <div class="date-picker-wrapper">
+                        <span class="date-label">📅 날짜 선택:</span>
+                        <input type="date" id="inputTargetDate" class="date-picker-input">
+                    </div>
+                    <span class="location-name-tag" id="currentLocationTag">제주특별자치도 제주시</span>
+                </div>
+            </section>
+
+            <!-- 대시보드 그리드 -->
+            <div class="dashboard-grid">
+
+                <main class="main-content">
+
+                    <!-- [탭 1] ☀️ 오늘의 쾌적교실 & AI 환기 가이드 -->
+                    <div id="tabViewToday" class="tab-view active">
+                        
+                        <!-- 날씨/공기질 카드 3개 -->
+                        <section class="cards-section">
+                            <div class="info-card temp-humidity-card">
+                                <div class="card-header">
+                                    <span class="card-icon">🌡️</span>
+                                    <span class="card-title">실외 기온 및 습도</span>
+                                    <span class="card-tag tag-blue" id="weatherSourceTag">기상청 공식 데이터</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="primary-val-group">
+                                        <span class="primary-value" id="valOutdoorTemp">29.5</span>
+                                        <span class="unit">°C</span>
+                                    </div>
+                                    <div class="secondary-info">
+                                        <div class="info-item"><span class="label">상대습도</span> <span class="value" id="valHumidity">69%</span></div>
+                                        <div class="info-item"><span class="label">불쾌지수</span> <span class="value" id="valDiscomfort">78 (높음)</span></div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill temp-bar" id="barTempFill" style="width: 65%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="info-card heat-index-card">
+                                <div class="card-header">
+                                    <span class="card-icon">🔥</span>
+                                    <span class="card-title">체감 온도</span>
+                                    <span class="status-badge warning" id="sensoryStatusBadge">
+                                        <span class="badge-icon">⚠️</span> <span id="sensoryStatusText">경고</span>
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="primary-val-group">
+                                        <span class="primary-value highlight-warning" id="valSensoryTemp">31.2</span>
+                                        <span class="unit">°C</span>
+                                    </div>
+                                    <p class="card-desc" id="sensoryDesc"></p>
+                                </div>
+                                <div class="comfort-indicator">
+                                    <div class="indicator-pointer" id="indicatorPointer" style="left: 70%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="info-card dust-card">
+                                <div class="card-header">
+                                    <span class="card-icon">💨</span>
+                                    <span class="card-title">미세먼지 농도</span>
+                                    <span class="status-badge good" id="dustStatusBadge">
+                                        <span class="badge-icon">🌿</span> <span id="dustStatusText">좋음</span>
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="primary-val-group">
+                                        <span class="primary-value" id="valPm10">16</span>
+                                        <span class="unit">µg/m³</span>
+                                    </div>
+                                    <div class="dust-details">
+                                        <div class="dust-item"><span class="label">미세먼지 (PM10)</span> <span class="dust-val good" id="valPm10Detail">16 µg/m³</span></div>
+                                        <div class="dust-item"><span class="label">초미세먼지 (PM2.5)</span> <span class="dust-val good" id="valPm25Detail">8 µg/m³</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- 중앙 메인 AI 가이드 패널 (AI 환기 골든타임 + 에어컨 설정 온도) -->
+                        <section class="ai-guide-panel" id="aiGuidePanel">
+                            <div class="guide-bg-animation" id="guideBgAnimation"></div>
+
+                            <div class="guide-grid">
+                                <div class="guide-box ventilation-box">
+                                    <div class="guide-badge"><span>💡 AI 오늘의 환기 & 절전 골든타임</span></div>
+                                    <h2 class="guide-main-title" id="ventilationMainTitle">자연 환기 권장</h2>
+                                    <p class="guide-subtitle" id="ventilationSubTitle"></p>
+
+                                    <div class="guide-action-list">
+                                        <div class="action-item">
+                                            <span class="action-icon">🪟</span>
+                                            <div><strong>추천 환기 시간</strong> <p id="recommendedVentTime"></p></div>
+                                        </div>
+                                        <div class="action-item">
+                                            <span class="action-icon">🍃</span>
+                                            <div><strong>공기 순환 팁</strong> <p id="airCirculationTip"></p></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="guide-box hvac-recommend-box">
+                                    <div class="guide-badge sky-badge"><span>❄️ AI 추천 에어컨 설정 온도</span></div>
+                                    <div class="recommend-temp-display">
+                                        <div class="temp-big-text" id="aiRecommendedTemp">26<span class="unit">°C</span></div>
+                                        <div class="temp-tag" id="aiHvacMode">에어컨 절전 모드</div>
+                                    </div>
+                                    
+                                    <div class="energy-saving-card">
+                                        <div class="saving-icon">🌱</div>
+                                        <div class="saving-info">
+                                            <span class="saving-title">예상 에너지 절감률</span>
+                                            <strong class="saving-value" id="energySavingVal">약 18.5% 절감</strong>
+                                        </div>
+                                    </div>
+                                    <p class="hvac-note" id="hvacNote"></p>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+
+                    <!-- [탭 2] 📅 일주일 기상청 날씨 예보 뷰 (100% 기상청 API 데이터 기반) -->
+                    <div id="tabViewWeekly" class="tab-view" style="display: none;">
+                        <section class="weekly-weather-section">
+                            <div class="weekly-header">
+                                <h2>📅 기상청 공식 단기예보 기반 7일간 학교 날씨 예보</h2>
+                                <p>사용자께서 전달해주신 기상청 API 키로 수신한 100% 기상청 일기예보 데이터입니다.</p>
+                            </div>
+                            <div class="weekly-cards-grid" id="weeklyWeatherTrack"></div>
+                        </section>
+                    </div>
+
+                    <!-- [탭 3] 📅 나이스 시간표 뷰 -->
+                    <div id="tabViewCalendar" class="tab-view" style="display: none;">
+                        <section class="timeline-section">
+                            <div class="timeline-header">
+                                <div class="timeline-title-group">
+                                    <h2 id="timelineTitleHeader">📅 교시별 과목 시간표</h2>
+                                    <p id="scheduleStatusNoticeTag" class="schedule-notice-tag">나이스 API 수신 확인 중...</p>
+                                </div>
+                                <div class="timeline-legend">
+                                    <span class="legend-item"><span class="legend-dot good"></span> 자연환기</span>
+                                    <span class="legend-item"><span class="legend-dot warning"></span> 창문 닫기&냉방</span>
+                                </div>
+                            </div>
+
+                            <div class="timeline-track" id="timelineTrack"></div>
+                        </section>
+                    </div>
+
+                </main>
+
+                <!-- 우측 실시간 제어 시뮬레이터 -->
+                <aside class="simulator-sidebar">
+                    <div class="simulator-card">
+                        <div class="simulator-header">
+                            <div class="sim-title-group">
+                                <span class="sim-icon">🎛️</span>
+                                <div>
+                                    <h3>실시간 제어 시뮬레이터</h3>
+                                    <p>슬라이더를 조절하여 조건을 테스트해 보세요</p>
+                                </div>
+                            </div>
+                            <button class="reset-sim-btn" id="resetSimBtn">🔄 초기화</button>
+                        </div>
+
+                        <div class="simulator-body">
+                            <div class="control-group">
+                                <div class="control-label-row">
+                                    <label for="sliderTemp">🌡️ 실외 기온</label>
+                                    <span class="control-val-badge" id="sliderTempVal">29.5 °C</span>
+                                </div>
+                                <input type="range" id="sliderTemp" min="10" max="38" step="0.5" value="29.5" class="slider temp-slider">
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-label-row">
+                                    <label for="sliderHum">💧 실외 상대습도</label>
+                                    <span class="control-val-badge" id="sliderHumVal">69 %</span>
+                                </div>
+                                <input type="range" id="sliderHum" min="20" max="95" step="1" value="69" class="slider hum-slider">
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-label-row">
+                                    <label for="sliderPm10">💨 미세먼지 (PM10)</label>
+                                    <span class="control-val-badge good" id="sliderPm10Val">16 µg/m³</span>
+                                </div>
+                                <input type="range" id="sliderPm10" min="0" max="200" step="1" value="16" class="slider pm10-slider">
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-label-row">
+                                    <label for="sliderPm25">🌫️ 초미세먼지 (PM2.5)</label>
+                                    <span class="control-val-badge good" id="sliderPm25Val">8 µg/m³</span>
+                                </div>
+                                <input type="range" id="sliderPm25" min="0" max="120" step="1" value="8" class="slider pm25-slider">
+                            </div>
+
+                            <div class="algo-rule-info">
+                                <h4>📋 AI 환기 판단 수식 규칙</h4>
+                                <ul>
+                                    <li><strong>자연 환기 조건:</strong> 미세먼지 좋음/보통 <strong>AND</strong> 실외 기온 20~28°C</li>
+                                    <li><strong>창문 닫기 조건:</strong> 미세먼지 나쁨 <strong>OR</strong> 체감온도 30°C 이상</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+            </div>
+
+        </div> <!-- /mainDashboardWrapper -->
+
+        <footer class="app-footer">
+            <p>© 2026 스마트에코 쾌적교실 - 기상청 API & 나이스(NEIS) 학교 시간표 API 수신 시스템</p>
+        </footer>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
