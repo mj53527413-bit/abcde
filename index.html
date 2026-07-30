@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>스마트에코 쾌적교실 - AI 환기 & 냉난방 스케줄러</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏫</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -33,9 +34,7 @@
             </div>
         </header>
 
-        <!-- ==========================================
-             [STEP 1] 요구사항 반영: 처음에 들어오면 먼저 학교/학년/반 선택 게이트 패널
-             ========================================== -->
+        <!-- [STEP 1] 학교/학년/반 선택 게이트 패널 -->
         <section class="school-select-gate" id="schoolGatePanel">
             <div class="gate-card">
                 <div class="gate-header">
@@ -45,7 +44,6 @@
                 </div>
 
                 <div class="gate-form-grid">
-                    <!-- 학교 검색 -->
                     <div class="gate-form-group">
                         <label for="inputGateSchoolSearch">🏫 학교 이름 검색</label>
                         <div class="search-input-wrapper">
@@ -55,7 +53,6 @@
                         </div>
                     </div>
 
-                    <!-- 학년 / 반 선택 -->
                     <div class="gate-form-group flex-group">
                         <div>
                             <label for="selectGateGrade">🎓 학년 선택</label>
@@ -74,12 +71,10 @@
             </div>
         </section>
 
-        <!-- ==========================================
-             [STEP 2] 학교 선택 완료 후 출력되는 메인 대시보드 영역
-             ========================================== -->
+        <!-- [STEP 2] 선택 완료 후 메인 대시보드 영역 -->
         <div id="mainDashboardWrapper" style="display: none;">
 
-            <!-- 상단 탭 라우팅 바 (오늘 날씨 & 환기 보기 / 일주일 기상청 날씨 예보 보기) -->
+            <!-- 상단 탭 라우팅 바 -->
             <nav class="url-tab-nav">
                 <div class="nav-tabs">
                     <button class="tab-btn active" data-tab="today">☀️ 오늘의 쾌적교실 & AI 환기 가이드</button>
@@ -117,7 +112,6 @@
                     <!-- [탭 1] ☀️ 오늘의 쾌적교실 & AI 환기 가이드 -->
                     <div id="tabViewToday" class="tab-view active">
                         
-                        <!-- 날씨/공기질 카드 3개 -->
                         <section class="cards-section">
                             <div class="info-card temp-humidity-card">
                                 <div class="card-header">
@@ -181,7 +175,7 @@
                             </div>
                         </section>
 
-                        <!-- 중앙 메인 AI 가이드 패널 (AI 환기 골든타임 + 에어컨 설정 온도) -->
+                        <!-- 메인 AI 가이드 패널 -->
                         <section class="ai-guide-panel" id="aiGuidePanel">
                             <div class="guide-bg-animation" id="guideBgAnimation"></div>
 
@@ -224,7 +218,7 @@
 
                     </div>
 
-                    <!-- [탭 2] 📅 일주일 기상청 날씨 예보 뷰 (100% 기상청 API 데이터 기반) -->
+                    <!-- [탭 2] 📅 일주일 기상청 날씨 예보 뷰 -->
                     <div id="tabViewWeekly" class="tab-view" style="display: none;">
                         <section class="weekly-weather-section">
                             <div class="weekly-header">
@@ -315,7 +309,7 @@
 
             </div>
 
-        </div> <!-- /mainDashboardWrapper -->
+        </div>
 
         <footer class="app-footer">
             <p>© 2026 스마트에코 쾌적교실 - 기상청 API & 나이스(NEIS) 학교 시간표 API 수신 시스템</p>

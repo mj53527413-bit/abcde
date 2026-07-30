@@ -1,37 +1,32 @@
 {
-  "version": 2,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/coord-to-grid",
-      "dest": "/weather.js?type=coord-to-grid"
+      "source": "/api/coord-to-grid",
+      "destination": "/weather.js?type=coord-to-grid"
     },
     {
-      "src": "/api/weather",
-      "dest": "/weather.js?type=current-weather"
+      "source": "/api/weather",
+      "destination": "/weather.js?type=current-weather"
     },
     {
-      "src": "/api/weekly-weather",
-      "dest": "/weather.js?type=weekly-weather"
+      "source": "/api/weekly-weather",
+      "destination": "/weather.js?type=weekly-weather"
     },
     {
-      "src": "/api/school-schedule",
-      "dest": "/weather.js?type=school-schedule"
+      "source": "/api/school-schedule",
+      "destination": "/weather.js?type=school-schedule"
     },
     {
-      "src": "/api/school-search",
-      "dest": "/weather.js?type=school-search"
+      "source": "/api/school-search",
+      "destination": "/weather.js?type=school-search"
     },
     {
-      "src": "/api/class-count",
-      "dest": "/weather.js?type=class-count"
+      "source": "/api/class-count",
+      "destination": "/weather.js?type=class-count"
     },
     {
-      "src": "/api/schedule",
-      "dest": "/weather.js?type=schedule"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/api/schedule",
+      "destination": "/weather.js?type=schedule"
     }
   ]
 }
