@@ -2,12 +2,20 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.html",
+      "src": "weather.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
       "use": "@vercel/static"
     },
     {
-      "src": "weather.js",
-      "use": "@vercel/node"
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -38,6 +46,14 @@
     {
       "src": "/api/schedule",
       "dest": "/weather.js?type=schedule"
+    },
+    {
+      "src": "/style.css",
+      "dest": "/style.css"
+    },
+    {
+      "src": "/app.js",
+      "dest": "/app.js"
     },
     {
       "src": "/(.*)",
