@@ -1,32 +1,47 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/api/coord-to-grid",
-      "destination": "/weather.js?type=coord-to-grid"
+      "src": "index.html",
+      "use": "@vercel/static"
     },
     {
-      "source": "/api/weather",
-      "destination": "/weather.js?type=current-weather"
+      "src": "weather.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/coord-to-grid",
+      "dest": "/weather.js?type=coord-to-grid"
     },
     {
-      "source": "/api/weekly-weather",
-      "destination": "/weather.js?type=weekly-weather"
+      "src": "/api/weather",
+      "dest": "/weather.js?type=current-weather"
     },
     {
-      "source": "/api/school-schedule",
-      "destination": "/weather.js?type=school-schedule"
+      "src": "/api/weekly-weather",
+      "dest": "/weather.js?type=weekly-weather"
     },
     {
-      "source": "/api/school-search",
-      "destination": "/weather.js?type=school-search"
+      "src": "/api/school-schedule",
+      "dest": "/weather.js?type=school-schedule"
     },
     {
-      "source": "/api/class-count",
-      "destination": "/weather.js?type=class-count"
+      "src": "/api/school-search",
+      "dest": "/weather.js?type=school-search"
     },
     {
-      "source": "/api/schedule",
-      "destination": "/weather.js?type=schedule"
+      "src": "/api/class-count",
+      "dest": "/weather.js?type=class-count"
+    },
+    {
+      "src": "/api/schedule",
+      "dest": "/weather.js?type=schedule"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
